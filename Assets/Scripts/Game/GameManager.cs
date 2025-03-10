@@ -14,10 +14,9 @@ public class GameManager : Singleton<GameManager>
     private GameUIController _gameUIController;
     private Canvas _canvas;
     
-    private enum TurnType { PlayerA, PlayerB }
+    private Constants.GameType _gameType;
     
-    public enum GameType { SinglePlayer, DualPlayer, MultiPlayer }
-    private GameType _gameType;
+    private MultiplayManager _multiplayManager;
 
     private void Start()
     {
@@ -25,7 +24,7 @@ public class GameManager : Singleton<GameManager>
         // OpenSigninPanel();
     }
 
-    public void ChangeToGameScene(GameType gameType)
+    public void ChangeToGameScene(Constants.GameType gameType)
     {
         _gameType = gameType;
         SceneManager.LoadScene("Game");
@@ -84,11 +83,39 @@ public class GameManager : Singleton<GameManager>
             var blockController = GameObject.FindObjectOfType<BlockController>();
             _gameUIController = GameObject.FindObjectOfType<GameUIController>();
             
+            // Block Controller 초기화
+            blockController.InitBlocks();
+            
             // Game UI 초기화
             _gameUIController.SetGameUIMode(GameUIController.GameUIMode.Init);
             
+            // Multiplay Manager 생성
+            _multiplayManager = new MultiplayManager((state, roomId) =>
+            {
+                switch (state)
+                {
+                    case Constants.MultiplayManagerState.CreateRoom:
+                        Debug.Log("## Create Room");
+                        // TODO: 대기 화면 표시
+                        break;
+                    case Constants.MultiplayManagerState.JoinRoom:
+                        Debug.Log("## Join Room");
+                        // 게임 실행
+                        
+                        break;
+                    case Constants.MultiplayManagerState.StartGame:
+                        Debug.Log("## Start Game");
+                        // 대기 화면을 닫고, 게임 실행
+                        
+                        break;
+                    case Constants.MultiplayManagerState.EndGame:
+                        Debug.Log("## End Game");
+                        break;
+                }
+            });
+            
             // Game Logic 객체 생성
-            var gameLogic = new GameLogic(blockController);
+            var gameLogic = new GameLogic(blockController, _gameType);
         }
         
         _canvas = GameObject.FindObjectOfType<Canvas>();
