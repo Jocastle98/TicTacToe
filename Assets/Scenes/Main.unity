@@ -428,7 +428,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC810\uC218\uBCF4\uAE30"
+  m_text: "\uBA40\uD2F0\uD50C\uB808\uC774"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3a4e3c2c38c1e384fa3c4c0cb47315e9, type: 2}
   m_sharedMaterial: {fileID: -1423741528718833254, guid: 3a4e3c2c38c1e384fa3c4c0cb47315e9, type: 2}
@@ -929,7 +929,7 @@ GameObject:
   - component: {fileID: 4005692776009063926}
   - component: {fileID: 1109071625244017924}
   m_Layer: 5
-  m_Name: Title Text (TMP)
+  m_Name: Title Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -999,8 +999,8 @@ RectTransform:
   m_Children:
   - {fileID: 2454131753704374241}
   - {fileID: 8052450380369547213}
-  - {fileID: 5902364326062183830}
   - {fileID: 976154065}
+  - {fileID: 5902364326062183830}
   m_Father: {fileID: 6365485930751877275}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}

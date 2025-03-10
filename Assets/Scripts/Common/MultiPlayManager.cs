@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -26,7 +26,7 @@ public class MessageData
     public string message { get; set; }
 }
 
-public class MultiplayManager
+public class MultiplayManager : IDisposable
 {
     private SocketIOUnity _socket;
     private event Action<Constants.MultiplayManagerState, string> _onMultiplayStateChanged;
@@ -84,5 +84,15 @@ public class MultiplayManager
     public void SendMessage(string roomId, string nickName, string message)
     {
         _socket.Emit("sendMessage", new { roomId, nickName, message });
+    }
+
+    public void Dispose()
+    {
+        if (_socket != null)
+        {
+            _socket.Disconnect();
+            _socket.Dispose();
+            _socket = null;
+        }
     }
 }
