@@ -21,7 +21,7 @@ public class UserData
 public class MoveData
 {
     [JsonProperty("position")] 
-    public int position;
+    public int position { get; set; }
 }
 
 public class MessageData
@@ -87,8 +87,8 @@ public class MultiplayManager : IDisposable
 
     private void StartGame(SocketIOResponse response)
     {
-        var data = response.GetValue<UserData>();
-        _onMultiplayStateChanged?.Invoke(Constants.MultiplayManagerState.StartGame, data.userId);
+        var data = response.GetValue<RoomData>();
+        _onMultiplayStateChanged?.Invoke(Constants.MultiplayManagerState.StartGame, data.roomId);
     }
 
     private void ExitRoom(SocketIOResponse response)
@@ -98,8 +98,7 @@ public class MultiplayManager : IDisposable
 
     private void EndGame(SocketIOResponse response)
     {
-        var data = response.GetValue<UserData>();
-        _onMultiplayStateChanged?.Invoke(Constants.MultiplayManagerState.EndGame, data.userId);
+        _onMultiplayStateChanged?.Invoke(Constants.MultiplayManagerState.EndGame, null);
     }
 
     private void ReceiveMessage(SocketIOResponse response)
@@ -111,6 +110,11 @@ public class MultiplayManager : IDisposable
     public void SendMessage(string roomId, string nickName, string message)
     {
         _socket.Emit("sendMessage", new { roomId, nickName, message });
+    }
+
+    public void LeaveRoom(string roomId)
+    {
+        _socket.Emit("leaveRoom", new { roomId });
     }
 
     public void Dispose()
