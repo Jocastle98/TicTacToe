@@ -10,6 +10,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject confirmPanel;
     [SerializeField] private GameObject signinPanel;
     [SerializeField] private GameObject signupPanel;
+    [SerializeField] private GameObject replayPanel;
     
     private GameUIController _gameUIController;
     private Canvas _canvas;
@@ -53,6 +54,28 @@ public class GameManager : Singleton<GameManager>
             var confirmPanelObject = Instantiate(confirmPanel, _canvas.transform);
             confirmPanelObject.GetComponent<ConfirmPanelController>()
                 .Show(message, onConfirmButtonClick);
+        }
+    }
+    
+    // 기보코드
+    public List<(int row, int col, Block.MarkerType)> LoadGameHistory()
+    {
+        return _gameLogic?.GetGameHistory();
+    }
+
+
+    public void OpenReplayPanel()
+    {
+        if (_canvas != null)
+        {
+            var replayPanelObject = Instantiate(replayPanel, _canvas.transform);
+            var replayPanelController = replayPanelObject.GetComponent<ReplayPanelController>();
+
+            if (replayPanelController != null)
+            {
+                var history = LoadGameHistory();
+                replayPanelController.OpenReplayPanel(history);
+            }
         }
     }
 

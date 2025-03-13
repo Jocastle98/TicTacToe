@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class BasePlayerState
@@ -190,6 +191,55 @@ public class GameLogic: IDisposable
         Draw    // 비김
     }
     
+    // 기보 코드
+    private List<(int row, int col, Block.MarkerType)> _gameHistory = new List<(int, int, Block.MarkerType)>();
+
+    public void SaveMove(int row, int col, Block.MarkerType markerType)
+    {
+        _gameHistory.Add((row, col, markerType));
+    }
+
+    public List<(int row, int col, Block.MarkerType)> GetGameHistory()
+    {
+        return _gameHistory;
+    }
+    
+    /// <summary>
+    /// _board에 새로운 값을 할당하는 함수
+    /// </summary>
+    /// <param name="playerType">할당하고자 하는 플레이어 타입</param>
+    /// <param name="row">Row</param>
+    /// <param name="col">Col</param>
+    /// <returns>False가 반환되면 할당할 수 없음, True는 할당이 완료됨</returns>
+    public bool SetNewBoardValue(Constants.PlayerType playerType, int row, int col)
+    {
+        if (_board[row, col] != Constants.PlayerType.None) return false;
+
+        //기보 코드
+        Block.MarkerType markerType;
+
+        if (playerType == Constants.PlayerType.PlayerA)
+        {
+            _board[row, col] = playerType;
+            markerType = Block.MarkerType.O;
+            blockController.PlaceMarker(markerType, row, col);
+        }
+        else if (playerType == Constants.PlayerType.PlayerB)
+        {
+            _board[row, col] = playerType;
+            markerType = Block.MarkerType.X;
+            blockController.PlaceMarker(markerType, row, col);
+        }
+        else
+        {
+            return false;
+        }
+
+        // 기보 코드
+        SaveMove(row, col, markerType);
+        return true;
+    }
+    
     public GameLogic(BlockController blockController, 
         Constants.GameType gameType)
     {
@@ -265,31 +315,7 @@ public class GameLogic: IDisposable
         _currentPlayerState?.OnEnter(this);
     }
     
-    /// <summary>
-    /// _board에 새로운 값을 할당하는 함수
-    /// </summary>
-    /// <param name="playerType">할당하고자 하는 플레이어 타입</param>
-    /// <param name="row">Row</param>
-    /// <param name="col">Col</param>
-    /// <returns>False가 반환되면 할당할 수 없음, True는 할당이 완료됨</returns>
-    public bool SetNewBoardValue(Constants.PlayerType playerType, int row, int col)
-    {
-        if (_board[row, col] != Constants.PlayerType.None) return false;
-        
-        if (playerType == Constants.PlayerType.PlayerA)
-        {
-            _board[row, col] = playerType;
-            blockController.PlaceMarker(Block.MarkerType.O, row, col);
-            return true;
-        }
-        else if (playerType == Constants.PlayerType.PlayerB)
-        {
-            _board[row, col] = playerType;
-            blockController.PlaceMarker(Block.MarkerType.X, row, col);
-            return true;
-        }
-        return false;
-    }
+
     
     /// <summary>
     /// 게임 결과 확인 함수

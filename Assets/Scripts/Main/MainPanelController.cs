@@ -24,4 +24,9 @@ public class MainPanelController : MonoBehaviour
     {
         GameManager.Instance.OpenSettingsPanel();
     }
+
+    public void OnClickReplayButton()
+    {
+        GameManager.Instance.OpenReplayPanel();
+    }
 }
