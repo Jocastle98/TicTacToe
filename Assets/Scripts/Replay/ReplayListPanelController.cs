@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ReplayListPanelController : MonoBehaviour
+public class ReplayListPanelController : PanelController
 {
     [SerializeField] private Transform content;
     [SerializeField] private GameObject replayButtonPrefab; // 프리팹(각 기보 버튼)
@@ -15,12 +15,7 @@ public class ReplayListPanelController : MonoBehaviour
 
     private void RefreshList()
     {
-        // // 기존 버튼 제거
-        // foreach (Transform child in content)
-        // {
-        //     Destroy(child.gameObject);
-        // }
-
+        
         // GameManager에서 기보 목록 받아오기
         var records = GameManager.Instance.GetAllRecords();
         foreach (var record in records)
@@ -61,9 +56,16 @@ public class ReplayListPanelController : MonoBehaviour
 
 
 
-    public void OnClickCloseButton()
+    public void OnCloseButtonClick()
     {
-        // 리스트 패널 닫기
-        gameObject.SetActive(false);
+        Hide(() =>
+        {
+            // GameManager 통해 메인 패널 참조
+            if (GameManager.Instance.mainPanel != null)
+            {
+                GameManager.Instance.mainPanel.SetActive(true);
+            }
+            gameObject.SetActive(false);
+        });
     }
 }

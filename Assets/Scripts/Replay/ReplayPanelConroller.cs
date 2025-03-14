@@ -46,6 +46,11 @@ public class ReplayPanelController : PanelController
     {
         Hide(() =>
         {
+            // GameManager 통해 메인 패널 참조
+            if (GameManager.Instance.mainPanel != null)
+            {
+                GameManager.Instance.mainPanel.SetActive(true);
+            }
             gameObject.SetActive(false);
         });
     }

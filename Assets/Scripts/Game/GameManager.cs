@@ -41,10 +41,10 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject confirmPanel;
     [SerializeField] private GameObject signinPanel;
     [SerializeField] private GameObject signupPanel;
-    
     [Header("Replay Prefab")]
     [SerializeField] private GameObject replayPanelPrefab; 
     // ↑ 프리팹으로 만든 ReplayPanel (BlockController 포함)
+    public GameObject mainPanel;
 
     private GameUIController _gameUIController;
     private Canvas _canvas;

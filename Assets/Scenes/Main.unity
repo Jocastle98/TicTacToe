@@ -156,6 +156,7 @@ MonoBehaviour:
   signinPanel: {fileID: 3189539900228609402, guid: d22da0f6442cedf438cde44736be2e29, type: 3}
   signupPanel: {fileID: 1418229856139745092, guid: 9f0a1fc40b442d443a3cbe868485e613, type: 3}
   replayPanelPrefab: {fileID: 113613041602951845, guid: c332690c6cc31874d818201a552d5a37, type: 3}
+  mainPanel: {fileID: 4420284525497155513}
 --- !u!4 &234581368
 Transform:
   m_ObjectHideFlags: 0
@@ -388,9 +389,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4420284525497155513}
-        m_TargetAssemblyTypeName: ReplayPanelController, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 638442154}
+        m_TargetAssemblyTypeName: ReplayListPanelController, Assembly-CSharp
+        m_MethodName: OnClickCloseButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -590,6 +591,7 @@ GameObject:
   - component: {fileID: 638442154}
   - component: {fileID: 638442153}
   - component: {fileID: 638442152}
+  - component: {fileID: 638442155}
   m_Layer: 5
   m_Name: Repaly List Panel
   m_TagString: Untagged
@@ -667,8 +669,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19cf326512fb4bee8ad09ba4329c8957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  panelRectTransform: {fileID: 0}
   content: {fileID: 1365176920}
   replayButtonPrefab: {fileID: 6635280433982999571, guid: b6762a37efe8809478f93b52f0535143, type: 3}
+--- !u!225 &638442155
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 638442150}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &690490490
 GameObject:
   m_ObjectHideFlags: 0
@@ -1113,7 +1128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ShowMaskGraphic: 0
+  m_ShowMaskGraphic: 1
 --- !u!114 &1015866221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1420,7 +1435,7 @@ RectTransform:
   m_Father: {fileID: 610880717}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.9999998, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1697,6 +1712,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1365176920}
+  - component: {fileID: 1365176922}
+  - component: {fileID: 1365176921}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -1721,8 +1738,48 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 300}
-  m_Pivot: {x: 0, y: 1}
+  m_SizeDelta: {x: 0, y: 1085}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!114 &1365176921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365176919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
+--- !u!114 &1365176922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365176919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 20
+    m_Right: 20
+    m_Top: 20
+    m_Bottom: 20
+  m_ChildAlignment: 4
+  m_Spacing: 30
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &1616642601
 GameObject:
   m_ObjectHideFlags: 0
@@ -1911,7 +1968,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8904039042331186285}
         m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
-        m_MethodName: OnClickReplayButton
+        m_MethodName: OnClickReplayListButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3058,6 +3115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cfd9c9884eeba84589b0e3fe6899387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  replayListPanel: {fileID: 638442150}
 --- !u!114 &8951020453896887147
 MonoBehaviour:
   m_ObjectHideFlags: 0
