@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class BasePlayerState
@@ -192,17 +193,10 @@ public class GameLogic: IDisposable
     }
     
     // 기보 코드
-    private List<(int row, int col, Block.MarkerType)> _gameHistory = new List<(int, int, Block.MarkerType)>();
-
-    public void SaveMove(int row, int col, Block.MarkerType markerType)
-    {
-        _gameHistory.Add((row, col, markerType));
-    }
-
-    public List<(int row, int col, Block.MarkerType)> GetGameHistory()
-    {
-        return _gameHistory;
-    }
+    private List<(int row, int col, Block.MarkerType)> _gameHistory
+        = new List<(int, int, Block.MarkerType)>();
+    
+    
     
     /// <summary>
     /// _board에 새로운 값을 할당하는 함수
@@ -215,7 +209,6 @@ public class GameLogic: IDisposable
     {
         if (_board[row, col] != Constants.PlayerType.None) return false;
 
-        //기보 코드
         Block.MarkerType markerType;
 
         if (playerType == Constants.PlayerType.PlayerA)
@@ -235,9 +228,26 @@ public class GameLogic: IDisposable
             return false;
         }
 
-        // 기보 코드
-        SaveMove(row, col, markerType);
+        //기보 코드
+        _gameHistory.Add((row, col, markerType));
+
         return true;
+    }
+
+    /// <summary>
+    /// 게임 오버시 호출되는 함수
+    /// gameResult에 따라 결과 출력
+    /// </summary>
+    /// <param name="gameResult">win, lose, draw</param>
+    public void EndGame(GameResult gameResult)
+    {
+        SetState(null);
+        
+        firstPlayerState = null;
+        secondPlayerState = null;
+        //기보 코드
+        GameManager.Instance.AddGameRecord(_gameHistory);
+        GameManager.Instance.OpenGameOverPanel();
     }
     
     public GameLogic(BlockController blockController, 
@@ -372,20 +382,7 @@ public class GameLogic: IDisposable
         return false;
     }
     
-    /// <summary>
-    /// 게임 오버시 호출되는 함수
-    /// gameResult에 따라 결과 출력
-    /// </summary>
-    /// <param name="gameResult">win, lose, draw</param>
-    public void EndGame(GameResult gameResult)
-    {
-        SetState(null);
-        
-        firstPlayerState = null;
-        secondPlayerState = null;
-        
-        GameManager.Instance.OpenGameOverPanel();
-    }
+   
 
     public Constants.PlayerType[,] GetBoard()
     {

@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class MainPanelController : MonoBehaviour
 {
+    [SerializeField] private GameObject replayListPanel;
     public void OnClickSinglePlayButton()
     {
         GameManager.Instance.ChangeToGameScene(Constants.GameType.SinglePlayer);
@@ -25,8 +26,16 @@ public class MainPanelController : MonoBehaviour
         GameManager.Instance.OpenSettingsPanel();
     }
 
-    public void OnClickReplayButton()
+    public void OnClickReplayListButton()
     {
-        GameManager.Instance.OpenReplayPanel();
+        // 메인 패널을 비활성화하거나 그대로 둘지 결정
+        // 만약 메인 패널을 숨기고 싶다면:
+        gameObject.SetActive(false);
+
+        // ReplayListPanel 활성화
+        replayListPanel.SetActive(true);
     }
+    
+
+
 }

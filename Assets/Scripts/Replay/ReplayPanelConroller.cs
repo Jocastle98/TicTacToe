@@ -1,40 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ReplayPanelController : PanelController
 {
-    [SerializeField] private GameObject mainPanel; // 메인 패널
-    [SerializeField] private GameObject replayPanel; // 기보 패널
     [SerializeField] private BlockController blockController;
-    [SerializeField] private Button closeButton;
-    [SerializeField] private Button nextButton;
-    [SerializeField] private Button prevButton;
 
     private List<(int row, int col, Block.MarkerType)> gameHistory;
     private int currentIndex = -1;
 
-    public void OpenReplayPanel(List<(int, int, Block.MarkerType)> history)
+    public void OpenReplayPanel(List<(int, int, Block.MarkerType)> moves)
     {
-        if (history == null || history.Count == 0) return; // 기보 데이터 없으면 리턴
+        if (moves == null || moves.Count == 0) return;
 
-        gameHistory = history;
+        gameHistory = moves;
         currentIndex = -1;
 
-        replayPanel.SetActive(true);
-        mainPanel.SetActive(false); 
-
+        Show(); 
         blockController.InitBlocks();
         OnNextButtonClick();
-    }
-
-    public void OnCloseButtonClick()
-    {
-        Hide(() =>
-        {
-            mainPanel.SetActive(true); 
-        });
     }
 
     public void OnNextButtonClick()
@@ -57,7 +41,12 @@ public class ReplayPanelController : PanelController
         }
     }
 
-   
 
-    
+    public void OnCloseButtonClick()
+    {
+        Hide(() =>
+        {
+            gameObject.SetActive(false);
+        });
+    }
 }
