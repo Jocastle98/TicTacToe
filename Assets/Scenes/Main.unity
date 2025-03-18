@@ -1848,7 +1848,7 @@ Canvas:
   m_GameObject: {fileID: 1616642601}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_Camera: {fileID: 1316130754}
   m_PlaneDistance: 1
   m_PixelPerfect: 0
