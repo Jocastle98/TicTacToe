@@ -245,23 +245,40 @@ public class GameLogic: IDisposable
         firstPlayerState = null;
         secondPlayerState = null;
 
-        // 기보 저장
+        // (기보 저장, GameOverPanel 등)
         GameManager.Instance.AddGameRecord(_gameHistory);
         GameManager.Instance.OpenGameOverPanel();
 
-        // **승/패**에 따라 GameManager에 아이콘 개수 업데이트
+        bool isWin = false;
+        int pointDelta = 0;
         if (gameResult == GameResult.Win)
         {
-            GameManager.Instance.HandleWin();
+            // 한 판 이겼으니 +1
+            isWin = true;
+            pointDelta = 1;  
+            GameManager.Instance.HandleWin();  // currentScore++
         }
         else if (gameResult == GameResult.Lose)
         {
-            GameManager.Instance.HandleLose();
+            // 한 판 졌으니 -1
+            isWin = false;
+            pointDelta = -1;
+            GameManager.Instance.HandleLose(); // currentScore--
+        }
+        else
+        {
+            // 무승부
+            isWin = false;
+            pointDelta = 0;
         }
 
-        // 패널 열기
-        GameManager.Instance.OpenScorePanel(); 
+        // 점수 변화가 있을 때만 스코어 패널 열기
+        if (pointDelta != 0)
+        {
+            GameManager.Instance.OpenScorePanel(isWin, pointDelta);
+        }
     }
+
 
     
     public GameLogic(BlockController blockController, 

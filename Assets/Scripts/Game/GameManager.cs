@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
+#region RecordClass
+
 // ------------------------------------------------------
 // 기보 한 판의 기록
 // ------------------------------------------------------
@@ -31,6 +34,9 @@ public class ReplayData
     public List<GameRecord> records = new List<GameRecord>();
 }
 
+    #endregion
+
+
 // ------------------------------------------------------
 // GameManager 본체
 // ------------------------------------------------------
@@ -52,84 +58,144 @@ public class GameManager : Singleton<GameManager>
     private Canvas _canvas;
     private Constants.GameType _gameType;
     private GameLogic _gameLogic;
-    
-    
-    
-    // 예: 왼쪽/오른쪽 아이콘 개수
-    private int leftIconCount = 0;
-    private int rightIconCount = 0;
 
-    /// <summary>
-    /// 승리 시 호출
-    /// </summary>
+
+    #region Score
+    
+    private int currentScore = 0; // -30 ~ +30 범위
+
     public void HandleWin()
     {
-        // 1) 왼쪽 아이콘이 하나 이상 있으면 => 왼쪽 아이콘 추가
-        if (leftIconCount > 0)
-        {
-            leftIconCount++;
-        }
-        else
-        {
-            // 2) 왼쪽이 비었고, 오른쪽이 있으면 => 오른쪽에서 하나 제거
-            if (rightIconCount > 0)
-            {
-                rightIconCount--;
-            }
-            else
-            {
-                // 3) 둘 다 비었으면 => 왼쪽 추가
-                leftIconCount++;
-            }
-        }
+        // 한 판 이겼으니 +1
+        currentScore += 1;
+        if (currentScore > 30) currentScore = 30;
     }
 
-    /// <summary>
-    /// 패배 시 호출
-    /// </summary>
     public void HandleLose()
     {
-        // 1) 왼쪽 아이콘이 하나 이상 있으면 => 왼쪽에서 하나 제거
-        if (leftIconCount > 0)
-        {
-            leftIconCount--;
-        }
-        else
-        {
-            // 2) 왼쪽이 비었으면 => 오른쪽에 하나 추가
-            rightIconCount++;
-        }
+        // 한 판 졌으니 -1
+        currentScore -= 1;
+        if (currentScore < -30) currentScore = -30;
     }
 
-    /// <summary>
-    /// ScorePanel 열기
-    /// </summary>
-    public void OpenScorePanel()
+    public void OpenScorePanel(bool isWin, int gainedOrLost)
     {
-        if (_canvas != null)
-        {
-            var scorePanelObject = Instantiate(scorePanel, _canvas.transform);
-            scorePanelObject.GetComponent<PanelController>().Show();
+        if (_canvas == null)
+            _canvas = FindObjectOfType<Canvas>();
+        if (_canvas == null) return;
 
-            // ScorePanelController를 얻어, 아이콘 개수 초기화
-            var scorePanelCtrl = scorePanelObject.GetComponent<ScorePanelController>();
-            if (scorePanelCtrl != null)
-            {
-                scorePanelCtrl.InitializeIcons(leftIconCount, rightIconCount);
-            }
+        var scorePanelObject = Instantiate(scorePanel, _canvas.transform);
+        var scorePanelCtrl = scorePanelObject.GetComponent<ScorePanelController>();
+        if (scorePanelCtrl != null)
+        {
+            // currentScore는 누적 점수, gainedOrLost는 이번 게임 증감(±1)
+            scorePanelCtrl.InitializePanel(currentScore, isWin, gainedOrLost);
         }
     }
     
+
+    #endregion
+
+    #region Record
     // ----------------------------------------
     // 기보(여러 게임 기록)를 저장하는 데이터
     // ----------------------------------------
     private ReplayData replayData = new ReplayData();
     private const string ReplayDataKey = "ReplayDataKey";
+    
+     // ==========================================
+    //  아래부터 기보(ReplayData) 저장/로드 로직
+    // ==========================================
+    private void LoadReplayData()
+    {
+        string json = PlayerPrefs.GetString(ReplayDataKey, "");
+        if (!string.IsNullOrEmpty(json))
+        {
+            replayData = JsonUtility.FromJson<ReplayData>(json);
+            if (replayData == null)
+                replayData = new ReplayData();
+        }
+        else
+        {
+            replayData = new ReplayData();
+        }
+    }
+
+    private void SaveReplayData()
+    {
+        string json = JsonUtility.ToJson(replayData);
+        PlayerPrefs.SetString(ReplayDataKey, json);
+        PlayerPrefs.Save();
+    }
+
+    // 게임 종료 시, GameLogic에서 수순(기보) 넘겨줄 때 호출
+    public void AddGameRecord(List<(int row, int col, Block.MarkerType)> moves)
+    {
+        // 새 기록 생성
+        GameRecord record = new GameRecord(DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+        
+        foreach (var move in moves)
+        {
+            record.rows.Add(move.row);
+            record.cols.Add(move.col);
+            record.markers.Add((int)move.Item3);
+        }
+
+        replayData.records.Add(record);
+        SaveReplayData(); // PlayerPrefs에 반영
+    }
+
+    // 모든 기보 목록 반환 (ReplayListPanel에서 사용)
+    public List<GameRecord> GetAllRecords()
+    {
+        return replayData.records;
+    }
+
+    // -----------------------------
+    //  특정 기보 재생 패널 열기
+    // -----------------------------
+    
+    public GameObject CreateReplayPanel()
+    {
+        return Instantiate(replayPanelPrefab, _canvas.transform);
+    }
+    public void OpenReplayPanel(GameRecord record)
+    {
+        if (record == null)
+        {
+            Debug.LogWarning("열 기보가 없습니다!");
+            return;
+        }
+
+        // 1) ReplayPanel 프리팹 Instantiate
+        var replayPanelObject = Instantiate(replayPanelPrefab, _canvas.transform);
+
+        // 2) ReplayPanelController에 기보 전달
+        var replayController = replayPanelObject.GetComponent<ReplayPanelController>();
+        if (replayController == null)
+        {
+            Debug.LogError("ReplayPanelController가 없습니다!");
+            return;
+        }
+
+        // record → (int row, int col, Block.MarkerType) 변환
+        var moves = new List<(int, int, Block.MarkerType)>();
+        for (int i = 0; i < record.rows.Count; i++)
+        {
+            moves.Add((record.rows[i], record.cols[i], (Block.MarkerType)record.markers[i]));
+        }
+
+        // 패널 열기
+        replayController.OpenReplayPanel(moves);
+    }
+
+    #endregion
+    
 
     private void Start()
     {
         // 로그인 패널 필요시 호출
-        // OpenSigninPanel();
+         OpenSigninPanel();
 
         // PlayerPrefs에서 기보 데이터 로드
         LoadReplayData();
@@ -220,89 +286,5 @@ public class GameManager : Singleton<GameManager>
         _gameLogic = null;
     }
 
-    // ==========================================
-    //  아래부터 기보(ReplayData) 저장/로드 로직
-    // ==========================================
-    private void LoadReplayData()
-    {
-        string json = PlayerPrefs.GetString(ReplayDataKey, "");
-        if (!string.IsNullOrEmpty(json))
-        {
-            replayData = JsonUtility.FromJson<ReplayData>(json);
-            if (replayData == null)
-                replayData = new ReplayData();
-        }
-        else
-        {
-            replayData = new ReplayData();
-        }
-    }
-
-    private void SaveReplayData()
-    {
-        string json = JsonUtility.ToJson(replayData);
-        PlayerPrefs.SetString(ReplayDataKey, json);
-        PlayerPrefs.Save();
-    }
-
-    // 게임 종료 시, GameLogic에서 수순(기보) 넘겨줄 때 호출
-    public void AddGameRecord(List<(int row, int col, Block.MarkerType)> moves)
-    {
-        // 새 기록 생성
-        GameRecord record = new GameRecord(DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-        
-        foreach (var move in moves)
-        {
-            record.rows.Add(move.row);
-            record.cols.Add(move.col);
-            record.markers.Add((int)move.Item3);
-        }
-
-        replayData.records.Add(record);
-        SaveReplayData(); // PlayerPrefs에 반영
-    }
-
-    // 모든 기보 목록 반환 (ReplayListPanel에서 사용)
-    public List<GameRecord> GetAllRecords()
-    {
-        return replayData.records;
-    }
-
-    // -----------------------------
-    //  특정 기보 재생 패널 열기
-    // -----------------------------
-    
-    public GameObject CreateReplayPanel()
-    {
-        return Instantiate(replayPanelPrefab, _canvas.transform);
-    }
-    public void OpenReplayPanel(GameRecord record)
-    {
-        if (record == null)
-        {
-            Debug.LogWarning("열 기보가 없습니다!");
-            return;
-        }
-
-        // 1) ReplayPanel 프리팹 Instantiate
-        var replayPanelObject = Instantiate(replayPanelPrefab, _canvas.transform);
-
-        // 2) ReplayPanelController에 기보 전달
-        var replayController = replayPanelObject.GetComponent<ReplayPanelController>();
-        if (replayController == null)
-        {
-            Debug.LogError("ReplayPanelController가 없습니다!");
-            return;
-        }
-
-        // record → (int row, int col, Block.MarkerType) 변환
-        var moves = new List<(int, int, Block.MarkerType)>();
-        for (int i = 0; i < record.rows.Count; i++)
-        {
-            moves.Add((record.rows[i], record.cols[i], (Block.MarkerType)record.markers[i]));
-        }
-
-        // 패널 열기
-        replayController.OpenReplayPanel(moves);
-    }
+   
 }

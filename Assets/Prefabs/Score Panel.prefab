@@ -943,6 +943,8 @@ MonoBehaviour:
   addScoreObjects: {fileID: 4832297240000764305}
   deleteScoreObjects: {fileID: 4558985472989006683}
   scoreImagePrefab: {fileID: 8652181255662544104, guid: d5ee4165add0fbe428df961b3da788be, type: 3}
+  messageText: {fileID: 821014449947187640}
+  upgradeText: {fileID: 3529310325871393532}
 --- !u!222 &8854606302245261158
 CanvasRenderer:
   m_ObjectHideFlags: 0

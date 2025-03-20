@@ -102,6 +102,7 @@ public class NetworkManage : Singleton<NetworkManage>
                         failure?.Invoke(1);
                     });
                 }
+                
                 else if (result.result == 2)
                 {
                     // 성공
