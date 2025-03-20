@@ -1079,9 +1079,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e709492ab47e9ba4a8efbb9a5449eab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  confirmPanelController: {fileID: 0}
-  settingsPanelController: {fileID: 0}
-  _currentPanelController: {fileID: 0}
 --- !u!114 &842584430
 MonoBehaviour:
   m_ObjectHideFlags: 0

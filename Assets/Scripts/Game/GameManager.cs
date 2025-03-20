@@ -41,6 +41,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject confirmPanel;
     [SerializeField] private GameObject signinPanel;
     [SerializeField] private GameObject signupPanel;
+    [SerializeField] private GameObject scorePanel;
+    
     [Header("Replay Prefab")]
     [SerializeField] private GameObject replayPanelPrefab; 
     // ↑ 프리팹으로 만든 ReplayPanel (BlockController 포함)
@@ -50,6 +52,73 @@ public class GameManager : Singleton<GameManager>
     private Canvas _canvas;
     private Constants.GameType _gameType;
     private GameLogic _gameLogic;
+    
+    
+    
+    // 예: 왼쪽/오른쪽 아이콘 개수
+    private int leftIconCount = 0;
+    private int rightIconCount = 0;
+
+    /// <summary>
+    /// 승리 시 호출
+    /// </summary>
+    public void HandleWin()
+    {
+        // 1) 왼쪽 아이콘이 하나 이상 있으면 => 왼쪽 아이콘 추가
+        if (leftIconCount > 0)
+        {
+            leftIconCount++;
+        }
+        else
+        {
+            // 2) 왼쪽이 비었고, 오른쪽이 있으면 => 오른쪽에서 하나 제거
+            if (rightIconCount > 0)
+            {
+                rightIconCount--;
+            }
+            else
+            {
+                // 3) 둘 다 비었으면 => 왼쪽 추가
+                leftIconCount++;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 패배 시 호출
+    /// </summary>
+    public void HandleLose()
+    {
+        // 1) 왼쪽 아이콘이 하나 이상 있으면 => 왼쪽에서 하나 제거
+        if (leftIconCount > 0)
+        {
+            leftIconCount--;
+        }
+        else
+        {
+            // 2) 왼쪽이 비었으면 => 오른쪽에 하나 추가
+            rightIconCount++;
+        }
+    }
+
+    /// <summary>
+    /// ScorePanel 열기
+    /// </summary>
+    public void OpenScorePanel()
+    {
+        if (_canvas != null)
+        {
+            var scorePanelObject = Instantiate(scorePanel, _canvas.transform);
+            scorePanelObject.GetComponent<PanelController>().Show();
+
+            // ScorePanelController를 얻어, 아이콘 개수 초기화
+            var scorePanelCtrl = scorePanelObject.GetComponent<ScorePanelController>();
+            if (scorePanelCtrl != null)
+            {
+                scorePanelCtrl.InitializeIcons(leftIconCount, rightIconCount);
+            }
+        }
+    }
     
     // ----------------------------------------
     // 기보(여러 게임 기록)를 저장하는 데이터
@@ -90,6 +159,8 @@ public class GameManager : Singleton<GameManager>
             settingsPanelObject.GetComponent<PanelController>().Show();
         }
     }
+    
+    
 
     public void OpenConfirmPanel(string message, ConfirmPanelController.OnConfirmButtonClick onConfirmButtonClick)
     {

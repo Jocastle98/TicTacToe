@@ -242,13 +242,27 @@ public class GameLogic: IDisposable
     public void EndGame(GameResult gameResult)
     {
         SetState(null);
-        
         firstPlayerState = null;
         secondPlayerState = null;
-        //기보 코드
+
+        // 기보 저장
         GameManager.Instance.AddGameRecord(_gameHistory);
         GameManager.Instance.OpenGameOverPanel();
+
+        // **승/패**에 따라 GameManager에 아이콘 개수 업데이트
+        if (gameResult == GameResult.Win)
+        {
+            GameManager.Instance.HandleWin();
+        }
+        else if (gameResult == GameResult.Lose)
+        {
+            GameManager.Instance.HandleLose();
+        }
+
+        // 패널 열기
+        GameManager.Instance.OpenScorePanel(); 
     }
+
     
     public GameLogic(BlockController blockController, 
         Constants.GameType gameType)
